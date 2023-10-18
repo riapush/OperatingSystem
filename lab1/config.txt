@@ -1,0 +1,3 @@
+D:\Git\GitHub\OperatingSystem\lab1\folder1
+D:\Git\GitHub\OperatingSystem\lab1\folder2
+4
