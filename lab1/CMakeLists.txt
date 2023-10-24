@@ -1,6 +1,0 @@
-cmake_minimum_required(VERSION 3.23)
-project(OperatingSystem)
-
-set(CMAKE_CXX_STANDARD 17)
-
-add_executable(OperatingSystem main.cpp Daemon.cpp Daemon.h)

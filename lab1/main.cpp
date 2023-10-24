@@ -1,8 +1,11 @@
 #include "Daemon.h"
 
+
+
+
 int main() {
     Daemon& daemon = Daemon::getInstance();
-    daemon.start("D:\\Git\\GitHub\\OperatingSystem\\lab1\\config.txt");
+    daemon.start("/home/riapush/os_labs/lab1/config.txt");
     return 0;
 }
 
