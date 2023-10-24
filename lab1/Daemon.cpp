@@ -1,5 +1,10 @@
 #include "Daemon.h"
 
+int Daemon::interval;
+std::filesystem::path Daemon::config_file_;
+std::filesystem::path Daemon::folder1;
+std::filesystem::path Daemon::folder2;
+
 void Daemon::set_config_file(std::string config_file_path) {
     if (std::filesystem::exists(config_file_path)) {
         config_file_ = config_file_path;
@@ -20,13 +25,13 @@ static void read_config() {
     while (std::getline(input, line)) {
         switch (line_count) {
             case 1:
-                Daemon::folder1 = line;
+                folder1 = line;
                 break;
             case 2:
-                Daemon::folder2 = line;
+                folder2 = line;
                 break;
             case 3:
-                Daemon::interval = std::stoi(line);
+                interval = std::stoi(line);
                 break;
             default:
                 break;
@@ -106,7 +111,7 @@ void Daemon::make_daemon() {
 static void signal_handler(int sig) {
     switch (sig){
         case SIGHUP:
-            read_config();
+            Daemon::read_config();
             break;
         case SIGTERM:
             syslog(LOG_NOTICE, "Deamon terminated");
