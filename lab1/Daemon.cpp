@@ -72,11 +72,12 @@ void Daemon::start(std::string config_file_path) {
             stop_daemon();
             set_config_file(config_file_path);
             read_config();
+            syslog(LOG_NOTICE, "Daemon started");
             log_folder_contents();
             std::this_thread::sleep_for(std::chrono::seconds(interval));
         }
         catch (const std::runtime_error& e) {
-            std::cerr << e.what() << std::endl;
+            syslog(LOG_ERROR, e.what())
             break;
         }
     }
@@ -88,6 +89,7 @@ void Daemon::stop_daemon(){
     f >> pid;
     if (std::filesystem::exists("/proc/" + std::to_string(pid)))
         kill(pid, SIGTERM);
+    syslog(LOG_NOTICE, "Daemon terminated");
 }
 
 void Daemon::make_daemon() {
