@@ -67,12 +67,13 @@ void Daemon::log_folder_contents() {
 
 void Daemon::start(std::string config_file_path) {
     // Daemon logic to periodically perform actions
+    stop_daemon();
+    make_daemon();
+    set_config_file(config_file_path);
+    read_config();
+    syslog(LOG_NOTICE, "Daemon started");
     while (true) {
         try {
-            stop_daemon();
-            set_config_file(config_file_path);
-            read_config();
-            syslog(LOG_NOTICE, "Daemon started");
             log_folder_contents();
             std::this_thread::sleep_for(std::chrono::seconds(interval));
         }
