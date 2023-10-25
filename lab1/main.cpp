@@ -3,7 +3,7 @@
 
 int main() {
     Daemon& daemon = Daemon::getInstance();
-    daemon.start("/home/riapush/os_labs/lab1/config.txt");
+    daemon.start("/home/riapush/Desktop/OperatingSystem/lab1/config.txt");
     return 0;
 }
 

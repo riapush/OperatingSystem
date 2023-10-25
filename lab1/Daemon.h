@@ -29,12 +29,12 @@ private:
 
     Daemon() : interval(DEFAULT_INTERVAL) {};
     void set_config_file(std::string config_file_path);
-        void log_folder_contents();
+    void log_folder_contents();
     void stop_daemon();
     void make_daemon();
 
 public:
-        Daemon(const Daemon&) = delete;
+    Daemon(const Daemon&) = delete;
     Daemon(Daemon&&) = delete;
     Daemon& operator=(const Daemon&) = delete;
     Daemon& operator=(Daemon&&) = delete;
@@ -45,6 +45,7 @@ public:
     }
 
     void start(std::string config_file_path);
+    void read_config();
 };
 
 

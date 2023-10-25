@@ -77,7 +77,7 @@ void Daemon::start(std::string config_file_path) {
             std::this_thread::sleep_for(std::chrono::seconds(interval));
         }
         catch (const std::runtime_error& e) {
-            syslog(LOG_ERROR, e.what())
+            syslog(LOG_ERR, "exception: %s" ,e.what());
             break;
         }
     }
