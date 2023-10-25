@@ -1,9 +1,20 @@
 #include "Daemon.h"
 
-int Daemon::interval;
-std::filesystem::path Daemon::config_file_;
-std::filesystem::path Daemon::folder1;
-std::filesystem::path Daemon::folder2;
+static void signal_handler(int sig) {
+    switch (sig){
+        case SIGHUP:
+            Daemon::getInstance().read_config();
+            break;
+        case SIGTERM:
+            syslog(LOG_NOTICE, "Deamon terminated");
+            closelog();
+            exit(EXIT_SUCCESS);
+            break;
+        default:
+            break;
+
+    }
+}
 
 void Daemon::set_config_file(std::string config_file_path) {
     if (std::filesystem::exists(config_file_path)) {
@@ -15,7 +26,7 @@ void Daemon::set_config_file(std::string config_file_path) {
 
 }
 
-static void read_config() {
+void Daemon::read_config() {
     std::ifstream input(config_file_);
     if(!input) {
         throw std::runtime_error("File does not exist or you do not have access to open it.");
@@ -106,21 +117,5 @@ void Daemon::make_daemon() {
 
     std::ofstream f(pid_path, std::ios_base::trunc);
     f << getpid();
-}
-
-static void signal_handler(int sig) {
-    switch (sig){
-        case SIGHUP:
-            Daemon::read_config();
-            break;
-        case SIGTERM:
-            syslog(LOG_NOTICE, "Deamon terminated");
-            closelog();
-            exit(EXIT_SUCCESS);
-            break;
-        default:
-            break;
-
-    }
 }
 

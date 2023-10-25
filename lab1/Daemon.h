@@ -21,15 +21,14 @@ const int DEFAULT_INTERVAL = 3;
 class Daemon {
 private:
     static Daemon instance;
-    static int interval;
+    int interval;
     const std::string pid_path = std::filesystem::absolute("mydaemon.pid");
-    static std::filesystem::path config_file_;
-    static std::filesystem::path folder1;
-    static std::filesystem::path folder2;
+    std::filesystem::path config_file_;
+    std::filesystem::path folder1;
+    std::filesystem::path folder2;
 
     Daemon() : interval(DEFAULT_INTERVAL) {};
     void set_config_file(std::string config_file_path);
-    static void read_config();
     void log_folder_contents();
     void stop_daemon();
     void make_daemon();
@@ -46,6 +45,7 @@ public:
     }
 
     void start(std::string config_file_path);
+    void read_config();
 };
 
 
