@@ -7,14 +7,9 @@
 #include <chrono>
 #include <thread>
 #include <filesystem>
-
 #include <csignal>
-#include <ctime>
-
 #include <sys/stat.h>
 #include <syslog.h>
-#include <tuple>
-#include <unistd.h>
 
 const int DEFAULT_INTERVAL = 3;
 
@@ -22,7 +17,7 @@ class Daemon {
 private:
     static Daemon instance;
     int interval;
-    const std::string pid_path = std::filesystem::absolute("mydaemon.pid");
+    const std::string pid_path = std::filesystem::absolute("/var/run/mydaemon.pid");
     std::filesystem::path config_file_;
     std::filesystem::path folder1;
     std::filesystem::path folder2;
@@ -35,9 +30,7 @@ private:
 
 public:
     Daemon(const Daemon&) = delete;
-    Daemon(Daemon&&) = delete;
     Daemon& operator=(const Daemon&) = delete;
-    Daemon& operator=(Daemon&&) = delete;
 
     static Daemon& getInstance() {
         static Daemon instance;

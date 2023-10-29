@@ -1,13 +1,13 @@
 #include "Daemon.h"
 
 
-int main() {
+/*int main() {
     Daemon& daemon = Daemon::getInstance();
     daemon.start("/home/riapush/Desktop/OperatingSystem/lab1/config.txt");
     return 0;
 }
-
-/*int main(int argc, char** argv)
+*/
+int main(int argc, char** argv)
 {
     if (argc != 2)
     {
@@ -18,4 +18,4 @@ int main() {
     Daemon::getInstance().start(argv[1]);
 
     return EXIT_SUCCESS;
-}*/
+}
