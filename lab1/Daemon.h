@@ -38,7 +38,7 @@ public:
     }
 
     void start(std::string config_file_path);
-    void read_config();
+    int read_config();
 };
 
 

@@ -26,7 +26,7 @@ void Daemon::set_config_file(std::string config_file_path) {
 
 }
 
-void Daemon::read_config() {
+int Daemon::read_config() {
     std::ifstream input(config_file_);
     if(!input) {
         syslog(LOG_ERR, "File does not exist or you do not have access to open it.");
