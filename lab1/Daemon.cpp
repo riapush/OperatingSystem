@@ -18,10 +18,12 @@ static void signal_handler(int sig) {
 
 void Daemon::set_config_file(std::string config_file_path) {
     if (std::filesystem::exists(config_file_path)) {
-        config_file_ = config_file_path;
+        config_file_ = fs::absolute(config_file_path);
     }
     else {
-        throw std::runtime_error("File does not exist or you do not have access to open it.");
+        syslog(LOG_NOTICE, "Config file does not exist. Daemon terminated");
+        closelog();
+        exit(EXIT_FAILURE);
     }
 
 }
