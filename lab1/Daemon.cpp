@@ -18,7 +18,7 @@ static void signal_handler(int sig) {
 
 void Daemon::set_config_file(std::string config_file_path) {
     if (std::filesystem::exists(config_file_path)) {
-        config_file_ = fs::absolute(config_file_path);
+        config_file_ = std::filesystem::absolute(config_file_path);
     }
     else {
         syslog(LOG_NOTICE, "Config file does not exist. Daemon terminated");
@@ -66,9 +66,9 @@ void Daemon::log_folder_contents() {
 
 void Daemon::start(std::string config_file_path) {
     // Daemon logic to periodically perform actions
+    set_config_file(config_file_path);
     stop_daemon();
     make_daemon();
-    set_config_file(config_file_path);
     if (read_config() == 1) {
         syslog(LOG_NOTICE, "Daemon not started");
         return;
