@@ -29,26 +29,23 @@ void Daemon::set_config_file(std::string config_file_path) {
 void Daemon::read_config() {
     std::ifstream input(config_file_);
     if(!input) {
-        throw std::runtime_error("File does not exist or you do not have access to open it.");
+        syslog(LOG_ERR, "File does not exist or you do not have access to open it.");
+        return 1;
     }
-    std::string line;
-    int line_count = 1;
-    while (std::getline(input, line)) {
-        switch (line_count) {
-            case 1:
-                folder1 = line;
-                break;
-            case 2:
-                folder2 = line;
-                break;
-            case 3:
-                interval = std::stoi(line);
-                break;
-            default:
-                break;
-        }
-        line_count++;
+    try {
+        std::string line;
+        std::getline(input, line);
+        folder1 = line;
+        std::getline(input, line);
+        folder2 = line;
+        std::getline(input, line);
+        interval = std::stoi(line);
     }
+    catch (const std::runtime_error& e) {
+        syslog(LOG_ERR, "exception: %s" ,e.what());
+        return 1;
+    }
+    return 0;
 }
 
 void Daemon::log_folder_contents() {
@@ -62,7 +59,7 @@ void Daemon::log_folder_contents() {
         }
         logfile.close();
     } else {
-        throw std::runtime_error("File does not exist or you do not have access to open it.");        }
+        throw std::runtime_error("File does not exist or you do not have access to open it."); }
 }
 
 void Daemon::start(std::string config_file_path) {
@@ -70,7 +67,10 @@ void Daemon::start(std::string config_file_path) {
     stop_daemon();
     make_daemon();
     set_config_file(config_file_path);
-    read_config();
+    if (read_config() == 1) {
+        syslog(LOG_NOTICE, "Daemon not started");
+        return;
+    }
     syslog(LOG_NOTICE, "Daemon started");
     while (true) {
         try {
