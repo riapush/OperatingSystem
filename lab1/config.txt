@@ -1,0 +1,3 @@
+/home/riapush/Desktop/OperatingSystem/lab1/f1
+/home/riapush/Desktop/OperatingSystem/lab1/f2
+5
