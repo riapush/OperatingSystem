@@ -60,16 +60,40 @@ void Host::connection_job() {
 }
 
 bool Host::read_message() {
-  ; // TODO
+  {
+      timespec t;
+      clock_gettime(CLOCK_REALTIME, &t);
+      t.tv_sec += 5;
+      int s = sem_timedwait(host_sem, &t);
+      if (s == -1) {
+          syslog(LOG_ERR, "ERROR [Host]: Read semaphore timeout");
+          is_running = false;
+          return false;
+      }
+  }
+
+  if (messages_in.push_connection(conn.get()) == false) {
+      is_running = false;
+      return false;
+  }
+  else if (messages_in.get_size() > 0) {
+      last_message_time = std::chrono::high_resolution_clock::now();
+  }
+  return true;
 }
 
 bool Host::write_message() {
-  ; // TODO
+  bool res = messages_out.pop_connection(conn.get());
+  sem_post(client_sem);
+  return res;
 }
 
 void Host::close_connection() {
-    syslog(LOG_INFO, "Client has been disconnected");
-    ; // TODO
+    conn->close();
+    sem_close(host_sem);
+    sem_close(client_sem);
+    kill(client_pid, SIGTERM);
+    syslog(LOG_INFO, "Connection has been closed");
 }
 
 bool Host::prepare() {
@@ -136,4 +160,15 @@ void Host::stop() {
         syslog(LOG_INFO, "Chat has been stopped");
         is_running = false;
     }
+}
+
+int main(int argc, char *argv[]) {
+    openlog("Chat log", LOG_NDELAY | LOG_PID, LOG_USER);
+    try {
+        Host::get_instance().run();
+    } catch (std::exception &e) {
+        syslog(LOG_ERR, "ERROR: %s. Close chat...", e.what());
+    }
+    closelog();
+    return 0;
 }
