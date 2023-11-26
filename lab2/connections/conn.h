@@ -1,6 +1,7 @@
+#pragma once
+
 #include <memory>
 #include <string>
-#include <sys/types.h>
 
 class Connection {
 protected:

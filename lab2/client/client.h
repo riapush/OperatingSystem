@@ -6,11 +6,11 @@
 #include <semaphore.h>   
 #include <bits/types/siginfo_t.h>
 
-#include "../client/client.h"
+#include "../host/host.h"
 #include "../connections/conn.h"
 #include "../message_queue.h"
 
-class Host {
+class Client{
 private:
     std::atomic<bool> isRunning = true;
 
@@ -22,7 +22,7 @@ private:
 
     void connection_job();
 
-    bool prepare();
+    bool prepare(const pid_t& host_pid);
     bool read_message();
     bool write_message();
     void close_connection();
@@ -31,21 +31,20 @@ private:
     MessageQueue messagesOut;
     static void signal_handler(int signum, siginfo_t* info, void *ptr);
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> lastMsgTime;
     static bool IsRun();
     static void writeWin(Message msg);
 
-    Host();
-    Host(const Host&) = delete;
-    Host(Host&&) = delete;
+    Client();
+    Client(const Client&) = delete;
+    Client(Client&&) = delete;
 public:
-    static Host& get_instance(){
-        static Host host_instance;
-        return host_instance;
+    static Client& get_instance(){
+        static Client client_instance;
+        return client_instance;
     }
-
+    bool init(const pid_t& host_pid);
     void run();
     void stop();
 
-    ~Host() = default;
+    ~Client() = default;
 };

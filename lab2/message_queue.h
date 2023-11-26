@@ -3,7 +3,7 @@
 #include <queue>
 #include <mutex>
 #include <syslog.h>
-#include "connections/AbstractConnection.h"
+#include "connections/conn.h"
 
 #define MAX_CHAR_LENGTH 300
 struct Message {
@@ -19,13 +19,13 @@ public:
     MessageQueue(const MessageQueue&) = delete;
     MessageQueue(MessageQueue&&) = delete;
 
-    void push_message(const Message& msg){
+    void pushMessage(const Message& msg){
         mutex.lock();
         q.push(msg);
         mutex.unlock();
     }
 
-    bool pop_message(Message* msg){
+    bool popMessage(Message* msg){
         mutex.lock();
         if (q.empty()) {
             mutex.unlock();
@@ -37,7 +37,7 @@ public:
         return true;
     }
 
-    size_t get_size(){
+    size_t getSize(){
         size_t elements = -1;
         mutex.lock();
         elements = q.size();
@@ -45,7 +45,7 @@ public:
         return elements;        
     }
 
-    bool push_connection(Connection *conn) {
+    bool pushConnection(Connection *conn) {
         mutex.lock();
         conn->update();
 
@@ -88,7 +88,7 @@ public:
         return true;
     }
 
-    bool pop_connection(Connection *conn) {
+    bool popConnection(Connection *conn) {
         mutex.lock();
     	conn->update();
 
@@ -103,7 +103,7 @@ public:
             try {
 
                 conn->write((void *)&msg, sizeof(Message));
-                log_str = std::string("Written msg: ") + std::string(msg.text);
+                log_str = std::string("Wrotten msg: ") + std::string(msg.text);
                 syslog(LOG_INFO, "%s", log_str.c_str());
                 q.pop();
             }
