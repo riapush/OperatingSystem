@@ -53,7 +53,6 @@ void Host::run() {
 
     while (isRunning.load()) {
         // Получение сообщения от пользователя
-        std::cout << "Enter your message: ";
         std::future<std::string> future = std::async(getAnswer);
         std::string answer;
         Message msg = {0};
@@ -76,7 +75,7 @@ void Host::stop() {
         syslog(LOG_INFO, "[LAB2] Chat stops working.");
         isRunning = false;
     }
-    system("pkill gnome-terminal");
+
 }
 
 bool Host::prepare() {
@@ -134,6 +133,7 @@ void Host::connection_job() {
 
         if (minutes_passed >= 1) {
           syslog(LOG_INFO, "[LAB2] Killing chat for 1 minute silence.");
+          system("pkill gnome-terminal");
           isRunning = false;
           break;
         }
@@ -171,7 +171,7 @@ bool Host::read_message() {
         lastMsgTime = std::chrono::high_resolution_clock::now();
         Message msg = {0};
         if (messagesIn.popMessage(&msg))
-            std::cout << "New message from client: " << msg.text << std::endl;
+            std::cout << "New message from client: " << msg.text << '\n';
 }
     return true;
 }

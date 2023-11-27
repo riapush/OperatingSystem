@@ -10,6 +10,7 @@
 #include <ostream>
 #include <iostream>
 #include <fstream>
+
 #include "client.h"
 
 void Client::signal_handler(int signum, siginfo_t* info, void *ptr) {
@@ -57,8 +58,12 @@ bool Client::init(const pid_t& host_pid) {
 void Client::run() {
     syslog(LOG_INFO, "[LAB2] INFO[Client]: Client started running.");
     std::thread connThread(&Client::connection_job, this);
-    system("gnome-terminal -e \"bash -c 'cp /dev/stdin  client_terminal_out.txt | tail -f client_terminal_in.file ;'\""); // открыли терминал, out которого соединен с дескриптором файла client_terminal_in.file, а stdin с дескриптором файла client_terminal_out.txt
-    std::string input_file_name = "client_terminal_out.txt";
+    
+    std::ofstream log;
+    log.open("client_terminal_out.file");
+    system("gnome-terminal -e \"bash -c 'cp /dev/stdin  client_terminal_in.txt | tail -f client_terminal_out.file ;'\""); // открыли терминал, out которого соединен с дескриптором файла client_terminal_out.file, а stdin с дескриптором файла client_terminal_in.txt
+    log.close();
+    std::string input_file_name = "client_terminal_in.txt";
     std::ifstream input_file(input_file_name);
     input_file.seekg(0, std::ios::end);
     std::streampos file_size = input_file.tellg();
@@ -71,10 +76,10 @@ void Client::run() {
         std::streampos tail = input_file.tellg();
         if (file_size != tail) {
             input_file.seekg(file_size);
-
             int buffer_size = 1024;
             char buffer[buffer_size];
             input_file.read(buffer, sizeof(buffer));
+            //printf("\nclient: %s\n", buffer);
             file_size = tail;
             Message msg = {0};
             strncpy(msg.text, buffer, buffer_size);
@@ -95,13 +100,11 @@ void Client::stop() {
         syslog(LOG_INFO, "[LAB2] INFO[Client]: Stop working...");
         isRunning = false;
     }
-    log.close()
 }
 
 bool Client::prepare(const pid_t& host_pid) {
     syslog(LOG_INFO, "[LAB2] INFO [Client]: Preparing for start");
     this->host_pid = host_pid;
-    log.open("client_terminal_in.file");
     
     conn = Connection::create(host_pid, false);
 
@@ -167,7 +170,14 @@ bool Client::read_message() {
     else if (messagesIn.getSize() > 0) {
         Message msg = {0};
         if (messagesIn.popMessage(&msg)){
-            log << "New message from host: " << msg.text << '\n';
+            std::ofstream log("client_terminal_out.file", std::ios::app);
+            if (log.is_open()){
+                log << "New message from host: " << msg.text << '\n';
+                log.close();
+            }
+            else{
+                syslog(LOG_ERR, "[LAB2] ERORR[Client]: Unable to show new message to client.");
+            }
             }
 }
     return true;
