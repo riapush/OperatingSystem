@@ -19,6 +19,7 @@ private:
     pid_t client_pid;
     sem_t *host_sem;
     sem_t *client_sem;
+    std::ofstream log;
 
     void connection_job();
 

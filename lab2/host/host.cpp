@@ -76,7 +76,7 @@ void Host::stop() {
         syslog(LOG_INFO, "[LAB2] Chat stops working.");
         isRunning = false;
     }
-
+    system("pkill gnome-terminal");
 }
 
 bool Host::prepare() {
@@ -134,7 +134,6 @@ void Host::connection_job() {
 
         if (minutes_passed >= 1) {
           syslog(LOG_INFO, "[LAB2] Killing chat for 1 minute silence.");
-          system("pkill gnome-terminal");
           isRunning = false;
           break;
         }
